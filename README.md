@@ -18,12 +18,12 @@ Desarrollado como parte del proyecto académico de Diseño de Software, con enfo
 
 ## Equipo de desarrollo
 
-| Rol                                    | Nombre Completo                      | GitHub usuario |
-|-----------------------------------------|--------------------------------------|:--------------:|
-| **Líder y documentación**               | Alex Xavier Banchon Miranda          |                |
-| **Frontend, QA**                        | Edilson Francisco Guillin Carrión    |                |
-| **Backend, base de datos**              | Kevin Jordan Vargas Patiño           |                |
-| **Soporte, testing y evidencias**       | Oscar Saúl Córdova Zambrano          |                |
+| Rol                                    | Nombre Completo                      | 
+|-----------------------------------------|--------------------------------------|
+| **Líder y documentación**               | Alex Xavier Banchon Miranda          |                
+| **Frontend, QA**                        | Edilson Francisco Guillin Carrión    |                
+| **Backend, base de datos**              | Kevin Jordan Vargas Patiño           |                
+| **Soporte, testing y evidencias**       | Oscar Saúl Córdova Zambrano          |                
 
 ---
 

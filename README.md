@@ -94,7 +94,7 @@ Desarrollado como parte del proyecto académico de Diseño de Software, con enfo
   [Video en Google Drive](https://drive.google.com/file/d/1HkMleTKX66R50edTkEuOs-zwEl5olu5Z/view?usp=sharing)
 
 - **Diagramas y anexos:**  
-  [Ver documentación](https://drive.google.com/drive/folders/1aTz-wMxiNe46pwNF0R3J2fx2dUV4k3gO?usp=sharing)
+  [Ver documentación]([https://drive.google.com/drive/folders/1aTz-wMxiNe46pwNF0R3J2fx2dUV4k3gO?usp=sharing](https://drive.google.com/file/d/1TgWqCGmyW1mkMtu-QFTLWH6fkApBbbgI/view?usp=drive_link))
 
 ---
 

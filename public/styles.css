@@ -1,0 +1,213 @@
+/* ====== ROOT / COLORES MARCA ====== */
+:root {
+  --brand-pink: #e91e63;
+  --brand-dark: #343a40;
+}
+
+/* ====== ESTILOS GLOBALES ====== */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ====== NAVBAR ====== */
+.navbar-brand {
+  font-weight: 700;
+}
+.navbar .btn {
+  padding: 0.35rem 0.8rem;
+}
+
+/* ====== HERO ====== */
+.hero {
+  height: 60vh;
+  background: url("https://placedog.net/1600/600?id=5") center / cover no-repeat;
+  position: relative;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+.hero h1,
+.hero small {
+  position: relative;
+  z-index: 2;
+}
+.hero .btn {
+  position: relative;
+  z-index: 2;
+}
+
+/* ====== BOTONES MARCA ====== */
+.btn-primary {
+  background: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #d81d5b;
+  border-color: #d81d5b;
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+
+/* ====== GALERÍA DE MASCOTAS ====== */
+.card img {
+  height: 220px;
+  object-fit: cover;
+}
+.card h5 {
+  font-weight: 600;
+}
+
+/* ====== FILTRO ACTIVO (si usas botones .filter-btn) ====== */
+.filter-btn.active {
+  background: var(--bs-primary);
+  color: #fff;
+}
+
+/* ====== MODALES ====== */
+.modal-header {
+  background: var(--bs-light);
+}
+.modal-title {
+  font-weight: 600;
+}
+
+/* ====== FORMULARIOS ====== */
+form .form-label {
+  font-weight: 500;
+}
+
+/* ====== FOOTER ====== */
+footer {
+  border-top: 1px solid #e9ecef;
+  color: var(--brand-dark);
+}
+
+/* ====== UTILIDADES ====== */
+.text-muted {
+  font-size: 0.9rem;
+}
+
+
+.pet-img {
+  height: 250px;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.pet-img:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+.card.pet-card { cursor: pointer; }
+.like-btn.selected { color: #e00; }
+.modal .img-fluid { max-height: 320px; object-fit: cover; }
+
+.hero {
+  position: relative;
+  background: url('https://placedog.net/1200/400?id=5') center/cover no-repeat;
+  color: #fff; 
+  height: 60vh; 
+  display: flex; 
+  align-items: center;
+}
+.hero-content {
+  background: rgba(0,0,0,0.3);
+  padding: 2rem 1rem;
+}
+
+/* Responsive Navbar spacing */
+@media (max-width: 992px) {
+  .navbar-nav .nav-item {
+    margin-bottom: 10px;
+  }
+}
+
+/* Card hover effect */
+.card.pet-card:hover, .card.pet-card:focus {
+  box-shadow: 0 0 15px #06c3a2bb;
+  transform: translateY(-2px) scale(1.03);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+
+
+.adoptlink-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 1px 8px #0001;
+  object-fit: cover;
+  background: #f5f5f5;
+}
+
+.adoptlink-logo-footer {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 2px 8px #0001;
+}
+
+.adoptlink-footer {
+  font-size: 1rem;
+}
+.adoptlink-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-left: 0;
+  justify-content: center;
+}
+.adoptlink-team li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  list-style: none;
+  font-size: 1rem;
+}
+.adoptlink-team img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0d6efd22;
+  background: #fff;
+}
+
+/* Responsive fix */
+@media (max-width: 600px) {
+  .adoptlink-footer .row > div { text-align: center !important; }
+  .adoptlink-team { flex-direction: column; align-items: center; }
+}
+
+/* Bonito para los links de redes */
+.adoptlink-footer a {
+  color: #1a1a1a;
+  transition: color 0.15s;
+}
+.adoptlink-footer a:hover {
+  color: #0d6efd;
+}

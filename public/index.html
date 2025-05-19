@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AdoptLink — Adopta tu mejor amigo</title>
+  <!-- Bootstrap 5.3.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: #f4f7fb; }
+    .navbar-brand img { height: 40px; margin-right: 12px; }
+    .nav-link, .navbar-brand { font-weight: 500; }
+    .navbar { background: rgba(255,255,255,0.95) !important; }
+    .hero {
+      background: linear-gradient(90deg,#50c2c9ee 0,#ab47bc99 100%), url('https://placedog.net/1200/400?id=5') center/cover no-repeat;
+      color: #fff; height: 350px; display: flex; align-items: center; position: relative; box-shadow:0 6px 30px #a3a3a355;
+    }
+    .hero-content { background: rgba(10,10,30,.45); padding:2.5rem 2rem; border-radius:2rem; }
+    .footer {
+      background: #333;
+      color: #f0f0f0;
+      font-size: 1rem;
+      border-top: 4px solid #5bc0be;
+      position: relative;
+      margin-top: 4rem;
+    }
+    .footer-logo {
+      height: 45px;
+      margin: 0 12px 0 0;
+      vertical-align: middle;
+      border-radius: 12px;
+      background: #fff;
+      padding: 5px;
+    }
+    .footer .footer-devs { font-size: 0.99rem; color: #e0e0e0; }
+    .footer a { color: #59d7d2; text-decoration: none; margin: 0 8px; }
+    .footer a:hover { text-decoration: underline; }
+    .footer-social {
+      margin: 14px 0;
+    }
+    /* Chatbot style */
+    #chatbot-fab {
+      position: fixed; bottom: 30px; right: 28px; z-index: 1100;
+      background: linear-gradient(120deg,#5bc0be,#ab47bc); color: #fff;
+      width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 14px #ab47bc55; cursor: pointer; font-size: 2rem;
+      transition: box-shadow 0.15s;
+    }
+    #chatbot-fab:hover { box-shadow: 0 4px 26px #5bc0beaa; }
+    #chatbot-box {
+      position: fixed; bottom: 110px; right: 34px; z-index: 1110;
+      width: 340px; max-width: 92vw; background: #fff; box-shadow:0 8px 28px #2224;
+      border-radius: 1.5rem; display: none; flex-direction: column; overflow: hidden;
+    }
+    #chatbot-header {
+      background: linear-gradient(90deg,#5bc0be,#ab47bc); color: #fff; font-weight: bold;
+      padding: 1rem; text-align:center; font-size:1.15rem;
+    }
+    #chatbot-messages { flex:1; max-height:260px; overflow-y:auto; background: #f4f6fb; padding: 1rem; }
+    .chatbot-msg { margin: .7em 0; display: flex; }
+    .chatbot-msg.bot { justify-content: flex-start; }
+    .chatbot-msg.user { justify-content: flex-end; }
+    .chatbot-bubble {
+      padding: .6em 1em; border-radius: 1.2em; max-width: 75%;
+      background: #e7effe; color: #313343; font-size: 1em;
+      box-shadow: 0 1px 4px #0001;
+    }
+    .chatbot-msg.bot .chatbot-bubble { background: #5bc0be22; color: #2e4d50;}
+    .chatbot-msg.user .chatbot-bubble { background: #ab47bc11; color: #8a388e;}
+    #chatbot-inputbar {
+      display: flex; border-top:1px solid #eee; background: #fafbfe; padding: .6em;
+    }
+    #chatbot-input {
+      flex:1; border: none; outline: none; padding: .5em .9em; border-radius: 1.5em;
+      font-size: 1em; background: #f7fafd; margin-right:.5em;
+    }
+    #chatbot-send {
+      background: #5bc0be; border:none; color:#fff; font-weight: bold; padding:.45em 1.5em; border-radius: 1.5em;
+      transition: background .1s; cursor: pointer;
+    }
+    #chatbot-send:hover { background: #ab47bc; }
+    @media (max-width:650px) {
+      #chatbot-box { right:6px; width:98vw; }
+      .hero-content { padding:1.2rem 0.6rem; }
+    }
+    /* Mejoras visuales cards */
+    .pet-card .card-title { font-size:1.2rem; }
+    .pet-card { transition:transform .12s, box-shadow .12s; }
+    .pet-card:hover { transform:translateY(-7px) scale(1.03); box-shadow:0 4px 30px #5bc0be22; }
+  </style>
+</head>
+<body>
+  <!-- Navbar/Encabezado profesional -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo AdoptLink" />
+        AdoptLink
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-center" id="mainMenu">
+          <li class="nav-item">
+            <button id="btnAgendarCita" class="btn btn-outline-success btn-sm ms-2">Agendar cita</button>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#mascotas">Mascotas</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sobre">Sobre nosotros</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          <li class="nav-item">
+            <button id="btnShowAuth" class="btn btn-outline-secondary btn-sm ms-3">Login</button>
+          </li>
+          <li class="nav-item" id="logoutItem" style="display:none;">
+            <button id="btnLogout" class="btn btn-outline-danger btn-sm ms-2">Salir</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Banner principal -->
+  <section class="hero mb-5">
+    <div class="hero-content container text-white shadow-lg">
+      <small class="text-uppercase mb-2 d-block">Encuentra tu compañero ideal</small>
+      <h1 class="display-4 fw-bold mb-3">Adopta tu mejor amigo</h1>
+      <a href="#mascotas" class="btn btn-lg btn-primary me-2">Ver mascotas</a>
+      <a href="#contacto" class="btn btn-lg btn-light">Contáctanos</a>
+    </div>
+  </section>
+
+  <!-- Mascotas & Filtro -->
+  <section id="mascotas" class="container mb-5">
+    <h2 class="text-center mb-4">Mascotas Disponibles</h2>
+    <div class="d-flex justify-content-center mb-4">
+      <button class="btn btn-outline-primary me-2 filter-btn active" data-filter="all">Todas</button>
+      <button class="btn btn-outline-primary me-2 filter-btn" data-filter="perro">Perros</button>
+      <button class="btn btn-outline-primary me-2 filter-btn" data-filter="gato">Gatos</button>
+      <button class="btn btn-outline-primary filter-btn" data-filter="otro">Otros</button>
+    </div>
+    <div id="pet-grid" class="row g-4"></div>
+  </section>
+
+  <!-- Modal Mascota Ampliada -->
+  <div class="modal fade" id="mascotaModal" tabindex="-1" aria-labelledby="mascotaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mascotaModalLabel">Detalles de la Mascota</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center mb-3 mb-md-0">
+              <img id="modalMascImg" class="img-fluid rounded shadow" src="" alt="Mascota">
+            </div>
+            <div class="col-md-6">
+              <h3 id="modalMascName"></h3>
+              <p class="mb-1"><strong>Especie:</strong> <span id="modalMascEspecie"></span></p>
+              <p class="mb-1"><strong>Edad:</strong> <span id="modalMascEdad"></span></p>
+              <p class="mb-1"><strong>Sexo:</strong> <span id="modalMascSexo"></span></p>
+              <p class="mb-1"><strong>Salud:</strong> <span id="modalMascSalud"></span></p>
+              <p class="mb-1"><strong>Vacunado:</strong> <span id="modalMascVacunado"></span></p>
+              <p class="mb-1"><strong>Esterilizado:</strong> <span id="modalMascEsterilizado"></span></p>
+              <p><strong>Historia:</strong> <span id="modalMascHistoria"></span></p>
+              <div class="my-3">
+                <button id="likeBtn" class="btn btn-outline-danger like-btn"><span id="likeIcon">♥</span> <span id="likeCount"></span></button>
+              </div>
+              <button id="btnPostularme" class="btn btn-primary">Postularme</button>
+            </div>
+          </div>
+          <!-- Formulario de postulación oculto -->
+          <form id="formPostulacion" class="mt-4" style="display:none;">
+            <h5>Formulario de Postulación</h5>
+            <div class="row g-2">
+              <input type="hidden" name="mascota_id" id="formMascotaId">
+              <div class="col-md-6">
+                <label for="formEmail" class="form-label">Correo electrónico</label>
+                <input required id="formEmail" name="email" type="email" class="form-control" readonly>
+              </div>
+              <div class="col-md-6">
+                <label for="formTelefono" class="form-label">Teléfono</label>
+                <input required id="formTelefono" name="telefono" class="form-control" placeholder="Teléfono">
+              </div>
+              <div class="col-md-6">
+                <label for="formDireccion" class="form-label">Dirección</label>
+                <input required id="formDireccion" name="direccion" class="form-control" placeholder="Dirección">
+              </div>
+              <div class="col-md-6">
+                <label for="formCedula" class="form-label">Cédula de identidad</label>
+                <input required id="formCedula" name="cedula_identidad" class="form-control" placeholder="Cédula de identidad">
+              </div>
+              <div class="col-md-12">
+                <label for="formEducacion" class="form-label">Educación</label>
+                <input id="formEducacion" name="educacion" class="form-control" placeholder="Nivel educativo">
+              </div>
+              <div class="col-md-12">
+                <label for="formFoto" class="form-label">Foto (opcional)</label>
+                <input id="formFoto" name="foto" type="file" accept="image/*" class="form-control">
+              </div>
+            </div>
+            <div class="mt-3 text-end">
+              <button type="submit" class="btn btn-success">Enviar Postulación</button>
+              <button type="button" class="btn btn-link" id="cancelPostulacion">Cancelar</button>
+            </div>
+            <div id="postulacionMsg" class="mt-2"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Agendar Cita -->
+  <div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="scheduleForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agendar Cita de Adopción</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="scheduleMsg" class="mb-2"></div>
+          <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <input id="schedEmail" class="form-control" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mascota</label>
+            <input id="schedPet" class="form-control" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha y hora</label>
+            <input id="schedDatetime" type="datetime-local" required class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit">Confirmar</button>
+          <button class="btn btn-link" type="button" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sobre Nosotros -->
+  <section id="sobre" class="bg-light py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Sobre AdoptLink</h2>
+      <p class="lead text-center mx-auto" style="max-width:800px">
+        En AdoptLink creemos que cada mascota merece un hogar lleno de amor y cuidado. Nuestra plataforma nace para conectar a animales que buscan una segunda oportunidad con familias responsables y comprometidas. Acompañamos a refugios, rescatistas y adoptantes en un proceso transparente, seguro y lleno de empatía, donde el bienestar de cada mascota es nuestra prioridad.<br><br>
+        Gracias a AdoptLink, cientos de historias encuentran un final feliz: perros, gatos y otros animales que alguna vez estuvieron solos, hoy disfrutan de un nuevo comienzo junto a quienes los cuidan. Nos esforzamos por ofrecer un acompañamiento cercano durante todo el proceso de adopción, garantizando que cada unión sea positiva y duradera.<br><br>
+        Únete a nuestra comunidad y forma parte de una red que transforma vidas, una adopción a la vez.
+      </p>
+    </div>
+  </section>
+
+  <!-- Documentación -->
+  <section id="documentacion" class="bg-light py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Documentación</h2>
+      <p class="lead text-center mx-auto" style="max-width:800px">
+        <b>1. Registro y autenticación:</b> El usuario crea una cuenta en AdoptLink o inicia sesión con correo y contraseña.<br>
+        <b>2. Selección de la mascota:</b> El usuario explora el catálogo y, al hacer clic en una mascota, puede ver su ficha y acceder al botón “Postularme”.<br>
+        <b>3. Llenado del formulario de postulación:</b> El postulante completa todos los campos requeridos (datos personales, cédula, dirección, etc.) y adjunta la foto si desea.<br>
+        <b>4. Envío de postulación:</b> El formulario es enviado y almacenado en la base de datos; el usuario recibe un mensaje de éxito.<br>
+        <b>5. Revisión y preselección:</b> El administrador o encargado del refugio revisa la postulación y documentación enviada. Puede comunicarse con el postulante si necesita aclarar información.<br>
+        <b>6. Agendamiento de cita:</b> Si la postulación es válida, el usuario recibe un enlace o se habilita el botón para agendar una cita presencial a través del sistema (usando la función “Agendar cita”). El usuario selecciona fecha y hora disponible.<br>
+        <b>7. Entrevista y validación:</b> El refugio o rescatista realiza la entrevista, verifica la identidad del postulante y puede solicitar la firma digital o física de la carta de compromiso. Puede visitar el domicilio si lo considera necesario.<br>
+        <b>8. Confirmación y entrega:</b> Si todo está en regla, se aprueba la adopción. Se entrega la mascota al nuevo dueño, registrando la fecha de adopción y generando el acta.<br>
+        <b>9. Seguimiento post-adopción:</b> (opcional, pero muy recomendable) El refugio puede realizar llamadas o visitas periódicas para asegurarse del bienestar del animal.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="container py-5">
+    <h2 class="text-center mb-4">Contáctanos</h2>
+    <form id="contactForm" class="row g-3 mx-auto" style="max-width:600px">
+      <div class="col-12">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" class="form-control" id="cname" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="cemail" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Teléfono</label>
+        <input type="tel" class="form-control" id="cphone" required />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Mensaje</label>
+        <textarea class="form-control" id="cmessage" rows="4" required></textarea>
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Footer Pro -->
+  <footer class="footer text-center">
+    <div class="container py-4">
+      <div class="row align-items-center mb-2">
+        <div class="col-md-2 d-none d-md-block text-end">
+          <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Logo AdoptLink" class="footer-logo" />
+        </div>
+        <div class="col-md-8 col-12 text-center">
+          <p class="mb-2">
+            <strong>AdoptLink</strong> — Conectando familias con mascotas desde 2025.<br>
+            Todos los derechos reservados &copy; 2025 AdoptLink.
+          </p>
+          <div class="footer-devs">
+            <span>Desarrollado por: Edilson Guillin, Kevin Vargas, y el equipo AdoptLink.</span>
+          </div>
+        </div>
+        <div class="col-md-2 d-none d-md-block text-start">
+          <!-- Espacio para logo si deseas -->
+        </div>
+      </div>
+      <div class="footer-social">
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/32/1384/1384005.png" alt="FB" height="22"></a>
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/32/1384/1384017.png" alt="IG" height="22"></a>
+        <a href="#"><img src="https://cdn-icons-png.flaticon.com/32/1384/1384014.png" alt="Twitter" height="22"></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chatbot Flotante -->
+  <div id="chatbot-fab" title="Ayuda rápida"><span>💬</span></div>
+  <div id="chatbot-box">
+    <div id="chatbot-header">Asistente AdoptLink</div>
+    <div id="chatbot-messages"></div>
+    <form id="chatbot-inputbar" autocomplete="off">
+      <input type="text" id="chatbot-input" placeholder="Escribe tu pregunta..." autocomplete="off" />
+      <button type="submit" id="chatbot-send">Enviar</button>
+    </form>
+  </div>
+
+  <!-- Modal Auth (Login / Registro) -->
+  <div class="modal fade" id="authModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="authTitle">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="authForm">
+            <div id="loginFields">
+              <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" name="email" autocomplete="username">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-control" name="password" autocomplete="current-password">
+              </div>
+            </div>
+            <div id="registerFields" style="display:none;">
+              <div class="mb-3">
+                <label class="form-label">Nombres y apellidos completos</label>
+                <input type="text" class="form-control" name="full_name" autocomplete="name">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" name="remail" autocomplete="username">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-control" name="rpassword" autocomplete="new-password">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" id="authSubmit">Entrar</button>
+          </form>
+          <div class="text-center mt-2">
+            <a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Chatbot Script -->
+  <script>
+    const fab = document.getElementById('chatbot-fab');
+    const box = document.getElementById('chatbot-box');
+    const msgDiv = document.getElementById('chatbot-messages');
+    const inputBar = document.getElementById('chatbot-inputbar');
+    const input = document.getElementById('chatbot-input');
+
+    fab.onclick = () => box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+
+    function addChatMsg(msg, user=false) {
+      const div = document.createElement('div');
+      div.className = 'chatbot-msg ' + (user ? 'user':'bot');
+      div.innerHTML = `<div class="chatbot-bubble">${msg}</div>`;
+      msgDiv.appendChild(div);
+      msgDiv.scrollTop = msgDiv.scrollHeight;
+    }
+
+    function botReply(q) {
+      // Respuestas demo (puedes conectar a tu backend o IA real aquí)
+      const resp = {
+        saludo: "¡Hola! ¿En qué puedo ayudarte hoy? 😊",
+        mascota: "Puedes ver todas las mascotas disponibles en la sección 'Mascotas'. Haz clic sobre una para ver detalles y postularte.",
+        cita: "Para agendar una cita, primero postúlate a una mascota y luego usa el botón 'Agendar cita'.",
+        contacto: "Puedes contactarnos usando el formulario de la sección Contacto o escribiendo en este chat.",
+        gracias: "¡Gracias por usar AdoptLink! Estamos aquí para ayudarte en todo el proceso de adopción.",
+      };
+      const txt = q.toLowerCase();
+      if (txt.includes("hola") || txt.includes("buenas")) return resp.saludo;
+      if (txt.includes("mascota") || txt.includes("animal")) return resp.mascota;
+      if (txt.includes("cita") || txt.includes("agendar")) return resp.cita;
+      if (txt.includes("contacto") || txt.includes("comunicar")) return resp.contacto;
+      if (txt.includes("gracias")) return resp.gracias;
+      return "¿Tienes alguna pregunta sobre adopción, citas, mascotas o contacto? ¡Estoy aquí para ayudarte!";
+    }
+
+    inputBar.onsubmit = (e) => {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (!val) return;
+      addChatMsg(val, true);
+      setTimeout(()=>addChatMsg(botReply(val)), 650);
+      input.value = "";
+    };
+    // Mensaje inicial
+    addChatMsg("¡Hola! Soy tu asistente virtual de AdoptLink. ¿En qué puedo ayudarte?", false);
+  </script>
+
+  <!-- Lógica AdoptLink (mascotas, postulación, citas, login, filtros, contacto) -->
+  <script>
+    let mascotasData = [];
+    const petGrid = document.getElementById('pet-grid');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const PLACE_IMG = 'https://via.placeholder.com/400x300?text=Mascota';
+
+    // Modal refs
+    const mascotaModal = new bootstrap.Modal(document.getElementById('mascotaModal'));
+    const modalMascImg = document.getElementById('modalMascImg');
+    const modalMascName = document.getElementById('modalMascName');
+    const modalMascEspecie = document.getElementById('modalMascEspecie');
+    const modalMascEdad = document.getElementById('modalMascEdad');
+    const modalMascSexo = document.getElementById('modalMascSexo');
+    const modalMascSalud = document.getElementById('modalMascSalud');
+    const modalMascVacunado = document.getElementById('modalMascVacunado');
+    const modalMascEsterilizado = document.getElementById('modalMascEsterilizado');
+    const modalMascHistoria = document.getElementById('modalMascHistoria');
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    const btnPostularme = document.getElementById('btnPostularme');
+    const formPostulacion = document.getElementById('formPostulacion');
+    const cancelPostulacion = document.getElementById('cancelPostulacion');
+    const formMascotaId = document.getElementById('formMascotaId');
+    const postulacionMsg = document.getElementById('postulacionMsg');
+
+    // Lógica para agendar cita (revisada)
+    const btnAgendarCita = document.getElementById('btnAgendarCita');
+    const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+    const scheduleForm = document.getElementById('scheduleForm');
+    const schedEmail = document.getElementById('schedEmail');
+    const schedPet = document.getElementById('schedPet');
+    const schedDatetime = document.getElementById('schedDatetime');
+    const scheduleMsg = document.getElementById('scheduleMsg');
+
+    // Helpers
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem('currentUser') || 'null');
+    }
+    function getLikes() {
+      return JSON.parse(localStorage.getItem('likes') || '{}');
+    }
+    function setLikes(obj) {
+      localStorage.setItem('likes', JSON.stringify(obj));
+    }
+
+    // Carga de mascotas
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/public/mascotas');
+        mascotasData = await res.json();
+        renderMascotas(mascotasData);
+      } catch (e) {
+        petGrid.innerHTML = '<div class="alert alert-danger">No se pudieron cargar las mascotas</div>';
+      }
+    });
+
+    function renderMascotas(data) {
+      if (!data.length) {
+        petGrid.innerHTML = '<div class="col-12 text-center text-muted">No hay mascotas disponibles.</div>';
+        return;
+      }
+      petGrid.innerHTML = data.map(m => `
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow pet-card" data-id="${m.id}">
+            <img src="${m.imagen ? '/imgs/mascotas/' + m.imagen.split(/[\\/]/).pop() : PLACE_IMG}" class="card-img-top" style="object-fit:cover;height:230px" alt="Mascota">
+            <div class="card-body">
+              <h5 class="card-title">${m.nombre || 'Mascota sin nombre'}</h5>
+              <p class="card-text mb-2"><strong>Especie:</strong> ${m.especie || '-'}</p>
+              <p class="card-text mb-2"><strong>Edad:</strong> ${m.edad || '-'}</p>
+              <p class="card-text mb-2"><strong>Sexo:</strong> ${m.sexo || '-'}</p>
+              <p class="card-text small">${m.historia || ''}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      setTimeout(() => {
+        document.querySelectorAll('.pet-card').forEach(card => {
+          card.onclick = () => showMascotaModal(card.getAttribute('data-id'));
+        });
+      }, 20);
+    }
+
+    // Modal Mascota
+    function showMascotaModal(mascotaId) {
+      postulacionMsg.textContent = '';
+      formPostulacion.reset();
+      formPostulacion.style.display = "none";
+      btnPostularme.style.display = "";
+      const m = mascotasData.find(x => x.id == mascotaId);
+      if (!m) return;
+      modalMascImg.src = m.imagen ? '/imgs/mascotas/' + m.imagen.split(/[\\/]/).pop() : PLACE_IMG;
+      modalMascName.textContent = m.nombre || '';
+      modalMascEspecie.textContent = m.especie || '';
+      modalMascEdad.textContent = m.edad || '';
+      modalMascSexo.textContent = m.sexo || '';
+      modalMascSalud.textContent = m.salud || '';
+      modalMascVacunado.textContent = m.vacunado ? "Sí" : "No";
+      modalMascEsterilizado.textContent = m.esterilizado ? "Sí" : "No";
+      modalMascHistoria.textContent = m.historia || '';
+      formMascotaId.value = m.id;
+      let likes = getLikes();
+      let liked = likes[m.id] || 0;
+      likeCount.textContent = liked;
+      likeBtn.classList.toggle('selected', liked > 0);
+
+      likeBtn.onclick = () => {
+        let likes = getLikes();
+        if (likes[m.id]) likes[m.id]++; else likes[m.id] = 1;
+        setLikes(likes);
+        likeCount.textContent = likes[m.id];
+        likeBtn.classList.add('selected');
+      };
+
+      btnPostularme.onclick = () => {
+        const cur = getCurrentUser();
+        if (!cur) {
+          alert('Debes iniciar sesión para postularte.');
+          return;
+        }
+        formPostulacion.style.display = "";
+        btnPostularme.style.display = "none";
+        document.getElementById('formEmail').value = cur.email || '';
+        document.getElementById('formEmail').readOnly = true;
+        document.getElementById('formTelefono').value = cur.telefono || '';
+      };
+      cancelPostulacion.onclick = () => {
+        formPostulacion.style.display = "none";
+        btnPostularme.style.display = "";
+      };
+
+      mascotaModal.show();
+    }
+
+    // Envío de postulación
+    formPostulacion.onsubmit = async function (e) {
+      e.preventDefault();
+      postulacionMsg.textContent = '';
+      const cur = getCurrentUser();
+      if (!cur) {
+        postulacionMsg.innerHTML = '<span class="text-danger">Debes iniciar sesión.</span>';
+        return;
+      }
+      const fd = new FormData();
+      fd.append('usuario_id', cur.id);
+      fd.append('mascota_id', formMascotaId.value);
+      fd.append('email', cur.email);
+      fd.append('telefono', document.getElementById('formTelefono').value);
+      fd.append('direccion', document.getElementById('formDireccion').value);
+      fd.append('cedula_identidad', document.getElementById('formCedula').value);
+      fd.append('educacion', document.getElementById('formEducacion').value);
+      if (document.getElementById('formFoto').files.length) {
+        fd.append('foto', document.getElementById('formFoto').files[0]);
+      }
+      try {
+        const res = await fetch('/api/postulaciones', { method: 'POST', body: fd });
+        if (res.ok) {
+          postulacionMsg.innerHTML = '<span class="text-success">¡Tu postulación ha sido enviada!</span>';
+          // Guardar postulación para luego agendar cita
+          const mascota = mascotasData.find(x => x.id == formMascotaId.value);
+          localStorage.setItem('ultimaPostulacion', JSON.stringify({
+            mascota_nombre: mascota ? mascota.nombre : "",
+            mascota_id: mascota ? mascota.id : "",
+            email: cur.email,
+            usuario_id: cur.id
+          }));
+          formPostulacion.reset();
+          setTimeout(()=>{ formPostulacion.style.display="none"; btnPostularme.style.display=""; mascotaModal.hide(); }, 2000);
+        } else {
+          postulacionMsg.innerHTML = '<span class="text-danger">No se pudo enviar la postulación.</span>';
+        }
+      } catch (e) {
+        postulacionMsg.innerHTML = '<span class="text-danger">Error de red al enviar la postulación.</span>';
+      }
+    };
+
+    // Filtros de mascotas
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        let filtradas;
+        if (filter === 'all') filtradas = mascotasData;
+        else if (filter === 'perro') filtradas = mascotasData.filter(m => (m.especie || '').toLowerCase().includes('perro'));
+        else if (filter === 'gato') filtradas = mascotasData.filter(m => (m.especie || '').toLowerCase().includes('gato'));
+        else filtradas = mascotasData.filter(m => !['perro', 'gato'].includes((m.especie || '').toLowerCase()));
+        renderMascotas(filtradas);
+      });
+    });
+
+    // Agendar Cita
+    btnAgendarCita.onclick = function () {
+      const cur = getCurrentUser();
+      if (!cur) {
+        alert("Debes iniciar sesión para agendar una cita.");
+        return;
+      }
+      let ultimaPostulacion = JSON.parse(localStorage.getItem('ultimaPostulacion') || 'null');
+      if (!ultimaPostulacion) {
+        scheduleMsg.innerHTML = '<span class="text-danger">Debes postularte a una mascota antes de agendar cita.</span>';
+        schedEmail.value = "";
+        schedPet.value = "";
+        schedDatetime.value = "";
+        scheduleModal.show();
+        return;
+      }
+      schedEmail.value = cur.email;
+      schedPet.value = ultimaPostulacion.mascota_nombre || "";
+      schedDatetime.value = "";
+      scheduleMsg.textContent = "";
+      scheduleModal.show();
+    };
+
+    scheduleForm.onsubmit = async function (e) {
+      e.preventDefault();
+      scheduleMsg.textContent = '';
+      const cur = getCurrentUser();
+      if (!cur) {
+        scheduleMsg.innerHTML = '<span class="text-danger">Debes iniciar sesión.</span>';
+        return;
+      }
+      if (!schedDatetime.value) {
+        scheduleMsg.innerHTML = '<span class="text-danger">Selecciona fecha y hora.</span>';
+        return;
+      }
+      try {
+        const citaData = {
+          usuario_id: cur.id,
+          mascota_nombre: schedPet.value,
+          email: schedEmail.value,
+          fecha_hora: schedDatetime.value
+        };
+        const res = await fetch('/api/citas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(citaData)
+        });
+        if (res.ok) {
+          scheduleMsg.innerHTML = '<span class="text-success">¡Cita agendada correctamente!</span>';
+          scheduleForm.reset();
+          setTimeout(() => { scheduleModal.hide(); }, 1800);
+        } else {
+          scheduleMsg.innerHTML = '<span class="text-danger">No se pudo agendar la cita.</span>';
+        }
+      } catch (e) {
+        scheduleMsg.innerHTML = '<span class="text-danger">Error de red al agendar cita.</span>';
+      }
+    };
+
+    // Contacto
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.onsubmit = async e => {
+        e.preventDefault();
+        const data = {
+          nombre  : document.getElementById('cname')?.value,
+          email   : document.getElementById('cemail')?.value,
+          telefono: document.getElementById('cphone')?.value,
+          mensaje : document.getElementById('cmessage')?.value
+        };
+        const r = await fetch('/api/contacto', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)
+        });
+        const j = await r.json();
+        alert(j.mensaje || 'Mensaje enviado');
+        contactForm.reset();
+      };
+    }
+
+    // Login/Register (igual)
+    const btnShowAuth = document.getElementById('btnShowAuth');
+    const btnLogout = document.getElementById('btnLogout');
+    const logoutItem = document.getElementById('logoutItem');
+    const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+    const toggleAuth = document.getElementById('toggleAuth');
+    const authTitle = document.getElementById('authTitle');
+    const loginFields = document.getElementById('loginFields');
+    const registerFields = document.getElementById('registerFields');
+    const authForm = document.getElementById('authForm');
+    const authSubmit = document.getElementById('authSubmit');
+    let isLogin = true;
+
+    btnShowAuth.addEventListener('click', () => {
+      isLogin = true;
+      setAuthForm();
+      authModal.show();
+    });
+
+    toggleAuth.addEventListener('click', (e) => {
+      e.preventDefault();
+      isLogin = !isLogin;
+      setAuthForm();
+    });
+
+    function setAuthForm() {
+      if (isLogin) {
+        authTitle.textContent = 'Login';
+        loginFields.style.display = '';
+        registerFields.style.display = 'none';
+        authSubmit.textContent = 'Entrar';
+        toggleAuth.textContent = '¿No tienes cuenta? Regístrate';
+        Array.from(loginFields.querySelectorAll('input')).forEach(i => i.required = true);
+        Array.from(registerFields.querySelectorAll('input')).forEach(i => i.required = false);
+      } else {
+        authTitle.textContent = 'Registro';
+        loginFields.style.display = 'none';
+        registerFields.style.display = '';
+        authSubmit.textContent = 'Registrar';
+        toggleAuth.textContent = '¿Ya tienes cuenta? Inicia sesión';
+        Array.from(registerFields.querySelectorAll('input')).forEach(i => i.required = true);
+        Array.from(loginFields.querySelectorAll('input')).forEach(i => i.required = false);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const cur = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (cur && cur.nombres_apellidos && cur.rol === 'user') {
+        btnShowAuth.textContent = cur.nombres_apellidos;
+        btnShowAuth.classList.replace('btn-outline-secondary','btn-outline-success');
+        btnShowAuth.disabled = true;
+        if (logoutItem) logoutItem.style.display = '';
+      } else {
+        btnShowAuth.textContent = "Login";
+        btnShowAuth.classList.replace('btn-outline-success','btn-outline-secondary');
+        btnShowAuth.disabled = false;
+        if (logoutItem) logoutItem.style.display = 'none';
+      }
+    });
+
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (isLogin) {
+        const email = authForm.elements['email'].value;
+        const password = authForm.elements['password'].value;
+        try {
+          const res = await fetch('/api/usuarios/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (data.user.rol === 'admin' && data.user.estado !== 'aprobado') {
+              alert('Administrador pendiente de aprobación.');
+              return;
+            }
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            if (data.user.rol === 'admin') {
+              window.location.href = '/admin.html';
+            } else {
+              authModal.hide();
+              btnShowAuth.textContent = data.user.nombres_apellidos;
+              btnShowAuth.classList.replace('btn-outline-secondary','btn-outline-success');
+              btnShowAuth.disabled = true;
+              if (logoutItem) logoutItem.style.display = '';
+            }
+          } else {
+            alert(data.mensaje || data.error || 'Usuario o contraseña incorrectos');
+          }
+        } catch (err) {
+          alert('Error de conexión');
+        }
+      } else {
+        const nombres = authForm.elements['full_name'].value.trim();
+        const remail = authForm.elements['remail'].value.trim();
+        const rpassword = authForm.elements['rpassword'].value.trim();
+        if (!nombres || !remail || !rpassword) {
+          alert('Completa todos los campos');
+          return;
+        }
+        try {
+          const res = await fetch('/api/usuarios/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombres_apellidos: nombres,
+              email: remail,
+              password: rpassword,
+              rol: 'user'
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            alert('Registro exitoso, ahora puedes iniciar sesión');
+            isLogin = true;
+            setAuthForm();
+          } else {
+            alert(data.mensaje || data.error || 'Error al registrar');
+          }
+        } catch (err) {
+          alert('Error de conexión');
+        }
+      }
+    });
+
+    if (btnLogout) {
+      btnLogout.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        btnShowAuth.textContent = "Login";
+        btnShowAuth.classList.replace('btn-outline-success','btn-outline-secondary');
+        btnShowAuth.disabled = false;
+        if (logoutItem) logoutItem.style.display = 'none';
+        location.reload();
+      });
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+

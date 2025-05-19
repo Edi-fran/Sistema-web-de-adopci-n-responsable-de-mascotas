@@ -105,13 +105,6 @@ Desarrollado como parte del proyecto académico de Diseño de Software, con enfo
   - Commits descriptivos y consistentes.
   - Pull requests y revisiones cruzadas antes del merge a `main`.
 
-- **Roles y responsables:**  
-  ![Roles del equipo](docs/roles.png)
-
-- **Planificación y cronograma:**  
-  ![Gantt](docs/gantt.png)
-
----
 
 ## Cómo contribuir
 
